@@ -17,12 +17,12 @@ export const CATEGORY_BY_ID = Object.fromEntries(CATEGORIES.map(c => [c.id, c]))
 const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
 
 const RULES = {
-  animals: range(0, 397),
+  animals: range(0, 397).filter(i => i !== 108), // 108 sea anemone — часто путается с цветами
   food: [
     ...range(923, 957), ...range(959, 969), 987, 998, 415, 504, 505, 509, 550, 567, 572, 659, 809,
     440, 441, 907, 901, 899, 849, 891, 909, 766,
   ],
-  nature: [...range(970, 980), ...range(984, 986), ...range(988, 997), 958, 672, 815],
+  nature: [...range(970, 980), ...range(984, 986), ...range(988, 997), 958, 672, 815, 599, 738, 989, 580, 108],
   people: [
     981, 982, 983, 399, 400, 411, 433, 445, 451, 452, 457, 459, 474, 501, 514,
     515, 518, 552, 568, 578, 601, 608, 610, 614, 617, 638, 639, 652,

@@ -31,17 +31,19 @@ function flatness(canvas) {
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   const { width: w, height: h } = canvas;
   const d = ctx.getImageData(0, 0, w, h).data;
-  let same = 0, total = 0;
+  let same = 0, total = 0, green = 0, mono = 0;
   const colors = new Set();
   for (let y = 0; y < h; y++) {
     for (let x = 1; x < w; x++) {
       const i = (y * w + x) * 4, j = i - 4;
       total++;
       if (Math.abs(d[i] - d[j]) + Math.abs(d[i + 1] - d[j + 1]) + Math.abs(d[i + 2] - d[j + 2]) <= 3) same++;
+      if (Math.max(d[i], d[i + 1], d[i + 2]) - Math.min(d[i], d[i + 1], d[i + 2]) < 14) mono++;
+      if (d[i + 1] > d[i] + 12 && d[i + 1] > d[i + 2] + 12) green++;
       colors.add((d[i] >> 4) << 8 | (d[i + 1] >> 4) << 4 | (d[i + 2] >> 4));
     }
   }
-  return { flat: same / total, colors: colors.size };
+  return { flat: same / total, colors: colors.size, green: green / total, mono: mono / total };
 }
 
 function toCanvas(img, size) {
@@ -95,10 +97,15 @@ export async function classify(img, file) {
   const isPng = /png|webp|gif/i.test(file?.type || '');
   let docScore = 0;
   if (f.flat > 0.5) docScore += (f.flat - 0.5) * 2.2;
-  if (f.colors < 180) docScore += 0.25;
+  if (f.mono > 0.9 && f.flat > 0.15) docScore += 0.6; // ч/б скан или текст
+  else if (f.colors < 180) docScore += 0.25;
   if (nameHint) docScore += 0.6;
   if (isPng && f.flat > 0.35) docScore += 0.25;
+  // Без подсказки в имени файла «плоскость» не должна перебивать уверенно найденный объект.
+  if (!nameHint) docScore = Math.min(docScore, 1);
   if (docScore > 0) add('docs', docScore);
+  // Много зелени — трава, листва, лес (ImageNet плохо знает растения)
+  if (f.green > 0.35) add('nature', (f.green - 0.2) * 1.2);
 
   const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
   let [category, best] = ranked[0] || ['other', 0];

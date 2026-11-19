@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Фотосортер</title>
+  <meta name="description" content="Автоматическая сортировка фотографий по категориям прямо в браузере">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🗂️%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button id="menuBtn" class="icon-btn only-mobile" aria-label="Категории">☰</button>
+    <div class="brand">
+      <span class="logo">🗂️</span>
+      <div>
+        <strong>Фотосортер</strong>
+        <span class="tagline">раскладывает фото по категориям сам</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="btn primary" data-pick="files">＋ Добавить фото</button>
+      <button class="btn ghost hide-sm" data-pick="folder">Папку</button>
+    </div>
+    <input id="fileInput" type="file" accept="image/*" multiple hidden>
+    <input id="folderInput" type="file" webkitdirectory multiple hidden>
+  </header>
+
+  <div id="progress" class="progress" hidden>
+    <span id="progressText">Сортировка…</span>
+    <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2 class="side-title">Категории</h2>
+      <ul id="cats" class="cats"></ul>
+      <p class="side-hint">Перетащите фото на категорию, чтобы переложить его вручную.</p>
+      <div class="side-actions">
+        <button id="zipAll" class="btn ghost full">⬇ Скачать всё по папкам</button>
+        <button id="clearAll" class="btn danger-ghost full">Очистить</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="empty" class="empty">
+        <div class="drop-card" data-pick="files" role="button" tabindex="0">
+          <div class="drop-art" aria-hidden="true">
+            <span>🌿</span><span>👤</span><span>🐾</span><span>🍽️</span>
+          </div>
+          <h1>Перетащите сюда фотографии</h1>
+          <p>или нажмите, чтобы выбрать файлы. Можно вставить из буфера (Ctrl+V).</p>
+          <ul class="features">
+            <li><b>Сам сортирует.</b> Нейросеть распознаёт людей, животных, еду, природу, город, транспорт, технику и скриншоты.</li>
+            <li><b>Приватно.</b> Фото не покидают ваш компьютер — всё считается в браузере.</li>
+            <li><b>Удобно забрать.</b> Скачайте результат архивом, где каждая категория — отдельная папка.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="workspace" hidden>
+        <div class="toolbar">
+          <div class="view-head">
+            <h1 id="viewTitle">Все фото</h1>
+            <span id="viewCount" class="muted"></span>
+          </div>
+          <div class="tools">
+            <input id="search" type="search" placeholder="Поиск по имени или метке…" aria-label="Поиск">
+            <select id="sort" aria-label="Сортировка">
+              <option value="added-desc">Сначала новые</option>
+              <option value="added-asc">Сначала старые</option>
+              <option value="date-desc">По дате файла ↓</option>
+              <option value="date-asc">По дате файла ↑</option>
+              <option value="name-asc">По имени</option>
+              <option value="size-desc">По размеру</option>
+            </select>
+            <button id="zipActive" class="btn ghost" hidden>⬇ ZIP категории</button>
+          </div>
+        </div>
+        <div id="grid" class="grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="drop-overlay" aria-hidden="true"><div>Отпустите, чтобы рассортировать</div></div>
+
+  <dialog id="lightbox" class="lightbox">
+    <div class="lb-body">
+      <div class="lb-stage">
+        <button id="lbPrev" class="lb-nav prev" aria-label="Предыдущее">‹</button>
+        <img id="lbImg" alt="">
+        <button id="lbNext" class="lb-nav next" aria-label="Следующее">›</button>
+      </div>
+      <div class="lb-info">
+        <div class="lb-head">
+          <h3 id="lbName"></h3>
+          <button id="lbClose" class="icon-btn" aria-label="Закрыть">✕</button>
+        </div>
+        <p id="lbMeta" class="muted"></p>
+        <h4>Категория <span id="lbConf" class="muted small"></span></h4>
+        <div id="lbCats" class="chips"></div>
+        <p class="muted small">Клавиши 1–9 — быстро сменить категорию, ← → — листать.</p>
+        <h4>Что распознано</h4>
+        <div id="lbTags" class="tags"></div>
+        <button id="lbDelete" class="btn danger-ghost">Убрать из сортировщика</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <script src="vendor/tf.min.js"></script>
+  <script src="vendor/mobilenet.min.js"></script>
+  <script src="vendor/coco-ssd.min.js"></script>
+  <script src="vendor/jszip.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

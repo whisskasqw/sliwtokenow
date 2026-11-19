@@ -135,7 +135,15 @@ async function removePhoto(id) {
 
 async function clearAll() {
   if (!state.photos.length) return;
-  if (!confirm(`Удалить все ${photoWord(state.photos.length)} из сортировщика? Файлы на диске не пострадают.`)) return;
+  const btn = $('#clearAll');
+  if (!btn.dataset.armed) {
+    btn.dataset.armed = '1';
+    btn.textContent = `Точно удалить ${photoWord(state.photos.length)}?`;
+    setTimeout(() => { delete btn.dataset.armed; btn.textContent = 'Очистить'; }, 4000);
+    return;
+  }
+  delete btn.dataset.armed;
+  btn.textContent = 'Очистить';
   state.queue = [];
   state.photos = [];
   for (const u of urls.values()) URL.revokeObjectURL(u);

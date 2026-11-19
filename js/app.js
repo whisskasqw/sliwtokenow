@@ -3,6 +3,7 @@ import { loadModels, classify } from './classifier.js';
 import { db, setErrorHandler } from './db.js';
 
 const $ = sel => document.querySelector(sel);
+const ico = n => `<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const state = {
   photos: [],          // { id, name, type, size, lastModified, addedAt, blob, thumb, category, manual, confidence, tags, w, h }
   active: 'all',
@@ -195,11 +196,11 @@ function visiblePhotos() {
 function renderSidebar() {
   const counts = {};
   for (const p of state.photos) if (p.category) counts[p.category] = (counts[p.category] || 0) + 1;
-  const items = [{ id: 'all', name: 'Все фото', icon: '🗂️', color: 'var(--accent)' }, ...CATEGORIES];
+  const items = [{ id: 'all', name: 'Все фото', icon: 'grid', color: 'var(--accent)' }, ...CATEGORIES];
   $('#cats').innerHTML = items.map(c => {
     const n = c.id === 'all' ? state.photos.length : counts[c.id] || 0;
     return `<li><button class="cat ${state.active === c.id ? 'active' : ''} ${n ? '' : 'is-empty'}" data-cat="${c.id}" style="--c:${c.color}">
-      <span class="cat-icon">${c.icon}</span><span class="cat-name">${c.name}</span><span class="cat-count">${n}</span>
+      <span class="cat-icon">${ico(c.icon)}</span><span class="cat-name">${c.name}</span><span class="cat-count">${n}</span>
     </button></li>`;
   }).join('');
 }
@@ -213,12 +214,12 @@ function renderGrid() {
   if (!has) return;
 
   const cat = state.active === 'all' ? null : CATEGORY_BY_ID[state.active];
-  $('#viewTitle').textContent = cat ? `${cat.icon} ${cat.name}` : 'Все фото';
+  $('#viewTitle').textContent = cat ? cat.name : 'Все фото';
   $('#viewCount').textContent = photoWord(list.length);
   $('#zipActive').hidden = !cat;
 
   if (!list.length) {
-    grid.innerHTML = `<p class="grid-empty">${state.search ? 'Ничего не найдено' : 'В этой категории пока нет фото. Перетащите сюда снимки из других категорий.'}</p>`;
+    grid.innerHTML = `<p class="grid-empty">${state.search ? 'Ничего не найдено' : 'Пока пусто'}</p>`;
     return;
   }
   grid.innerHTML = list.map(p => {
@@ -227,8 +228,8 @@ function renderGrid() {
     return `<figure class="card ${pending ? 'pending' : ''}" data-id="${escapeHtml(p.id)}" draggable="${!pending}" tabindex="0">
       ${p.thumb ? `<img src="${thumbUrl(p)}" alt="${escapeHtml(p.name)}" loading="lazy">` : '<div class="ph"></div>'}
       ${pending ? '<div class="spinner" aria-label="Обработка"></div>' : ''}
-      ${c && state.active === 'all' ? `<span class="badge" style="--c:${c.color}" title="${c.name}">${c.icon}</span>` : ''}
-      ${p.manual ? '<span class="manual" title="Категория выбрана вручную">✎</span>' : ''}
+      ${c && state.active === 'all' ? `<span class="badge" style="--c:${c.color}" title="${c.name}"></span>` : ''}
+      ${p.manual ? `<span class="manual" title="Категория выбрана вручную">${ico('pencil')}</span>` : ''}
       <figcaption>${escapeHtml(p.name)}</figcaption>
     </figure>`;
   }).join('');
@@ -271,9 +272,9 @@ function renderLightbox() {
   $('#lbTags').innerHTML = p.tags.length
     ? p.tags.map(t => `<button class="tag" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join('')
     : '<span class="muted">нет меток</span>';
-  $('#lbConf').textContent = p.manual ? 'выбрано вручную' : p.category ? `уверенность ${Math.round(p.confidence * 100)}%` : 'обрабатывается…';
+  $('#lbConf').textContent = p.manual ? 'выбрано вручную' : p.category ? `${Math.round(p.confidence * 100)}%` : 'обрабатывается';
   $('#lbCats').innerHTML = CATEGORIES.map(c =>
-    `<button class="chip ${p.category === c.id ? 'on' : ''}" data-set="${c.id}" style="--c:${c.color}" ${p.category ? '' : 'disabled'}>${c.icon} ${c.name}</button>`
+    `<button class="chip ${p.category === c.id ? 'on' : ''}" data-set="${c.id}" style="--c:${c.color}" ${p.category ? '' : 'disabled'}><i class="dot"></i>${c.name}</button>`
   ).join('');
 }
 

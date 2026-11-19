@@ -1,15 +1,15 @@
 // Категории и правила сопоставления классов ImageNet (индексы 0–999) с ними.
 
 export const CATEGORIES = [
-  { id: 'people',    name: 'Люди',              icon: '👤', color: '#f59e0b' },
-  { id: 'animals',   name: 'Животные',          icon: '🐾', color: '#ef4444' },
-  { id: 'nature',    name: 'Природа',           icon: '🌿', color: '#22c55e' },
-  { id: 'food',      name: 'Еда и напитки',     icon: '🍽️', color: '#f97316' },
-  { id: 'city',      name: 'Город и архитектура', icon: '🏛️', color: '#a78bfa' },
-  { id: 'transport', name: 'Транспорт',         icon: '🚗', color: '#3b82f6' },
-  { id: 'tech',      name: 'Техника',           icon: '💻', color: '#06b6d4' },
-  { id: 'docs',      name: 'Документы и скриншоты', icon: '📄', color: '#94a3b8' },
-  { id: 'other',     name: 'Другое',            icon: '📦', color: '#78716c' },
+  { id: 'people',    name: 'Люди',              icon: 'user', color: '#f59e0b' },
+  { id: 'animals',   name: 'Животные',          icon: 'paw', color: '#ef4444' },
+  { id: 'nature',    name: 'Природа',           icon: 'leaf', color: '#22c55e' },
+  { id: 'food',      name: 'Еда и напитки',     icon: 'utensils', color: '#f97316' },
+  { id: 'city',      name: 'Город и архитектура', icon: 'building', color: '#a78bfa' },
+  { id: 'transport', name: 'Транспорт',         icon: 'car', color: '#3b82f6' },
+  { id: 'tech',      name: 'Техника',           icon: 'laptop', color: '#06b6d4' },
+  { id: 'docs',      name: 'Документы и скриншоты', icon: 'file', color: '#94a3b8' },
+  { id: 'other',     name: 'Другое',            icon: 'dots', color: '#78716c' },
 ];
 
 export const CATEGORY_BY_ID = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
